@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-dock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-dock
+  template:
+    metadata:
+      labels:
+        app: api-dock
+    spec:
+      containers:
+      - name: api-dock
+        image: api-dock:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
