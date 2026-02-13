@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-dock
+  name: api-devops
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-dock
+      app: api-devops
   template:
     metadata:
       labels:
-        app: api-dock
+        app: api-devops
     spec:
       containers:
-      - name: api-dock
-        image: api-dock:latest
-        imagePullPolicy: Never
+      - name: api-devops
+        image: api-devops:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 80
+        - containerPort: 8000

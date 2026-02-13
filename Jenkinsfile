@@ -4,23 +4,29 @@ pipeline {
       yaml '''
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    app: creator-pipeline
 spec:
   containers:
+
   - name: builder
-    image: docker:latest
-    command: ["cat"]
+    image: docker:24.0.7-cli
+    command:
+    - cat
     tty: true
     volumeMounts:
-    - name: dockersock
+    - name: docker-sock
       mountPath: /var/run/docker.sock
 
   - name: kubectl
-    image: bitnami/kubectl:1.29
-    command: ["cat"]
+    image: bitnami/kubectl:1.29.8
+    command:
+    - cat
     tty: true
 
   volumes:
-  - name: dockersock
+  - name: docker-sock
     hostPath:
       path: /var/run/docker.sock
 '''
@@ -28,22 +34,30 @@ spec:
   }
 
   stages {
-    stage('Build') {
+
+    stage('Build Image') {
       steps {
         container('builder') {
-          sh 'docker version'
-          sh 'docker build -t api-devops:latest .'
+          sh '''
+          docker version
+          docker build -t api-devops:latest .
+          docker images
+          '''
         }
       }
     }
 
-    stage('Deploy') {
+    stage('Deploy to Kubernetes') {
       steps {
         container('kubectl') {
-          sh 'kubectl apply -f k8s.yaml'
-          sh 'kubectl get pods'
+          sh '''
+          kubectl version --client
+          kubectl apply -f k8s.yaml
+          kubectl get pods
+          '''
         }
       }
     }
+
   }
 }
